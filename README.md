@@ -1,6 +1,31 @@
-# ⚙️ SheetGen
-**AI-powered laser & punch press setup sheet automation**
+# SheetGen
 
+SheetGen generates setup/installation sheets from an Excel part list and a Word template.
+
+## What it does
+- Reads rows from your Excel file.
+- Maps the row data into fields in your Word template.
+- Exports one output per row (DOCX, and optionally PDF).
+
+## How to run
+1. Install dependencies: `pip install -r requirements.txt`
+2. Start the app: `python app.py`
+3. In the UI, select your Excel file, Word template, and output folder, then generate sheets.
+
+## License
+This project is licensed under the Apache License, Version 2.0. See `LICENSE` for details.
+
+# ⚙️ SheetGen
+Generate setup sheets from Excel data and a Word template.
+
+## What it does
+SheetGen fills your Word template using row data from your Excel file, generating one output per row (DOCX and optionally PDF).
+
+## Quick start
+- Install: `pip install -r requirements.txt`
+- Run: `python app.py`
+
+<!--
 ---
 
 ## What it does
@@ -128,3 +153,10 @@ If you skip this, the exe will still work for **digital** PDFs (text extraction)
 ## File locations
 - Config & cache: `~/.setup_sheet_config.json` (your home folder)
 - Output files: wherever you set the Output Folder in the app
+
+---
+
+-->
+
+## License
+Licensed under the Apache License, Version 2.0. See `LICENSE` for details.

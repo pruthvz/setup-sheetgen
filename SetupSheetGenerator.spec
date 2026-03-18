@@ -1,37 +1,26 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_all
-import os
-
-datas = []
-binaries = []
-
-# Bundle Tesseract for OCR (scanned PDF rename). Create tesseract_bundle/ with:
-#   tesseract_bundle/tesseract.exe
-#   tesseract_bundle/tessdata/eng.traineddata (and other .traineddata as needed)
-# Get these by installing Tesseract from https://github.com/UB-Mannheim/tesseract/wiki
-# then copy from e.g. C:\Program Files\Tesseract-OCR\
-TESSERACT_BUNDLE = os.path.join(SPECPATH, "tesseract_bundle")
-if os.path.isdir(TESSERACT_BUNDLE):
-    tess_exe = os.path.join(TESSERACT_BUNDLE, "tesseract.exe")
-    tessdata_dir = os.path.join(TESSERACT_BUNDLE, "tessdata")
-    if os.path.isfile(tess_exe) and os.path.isdir(tessdata_dir):
-        datas.append((TESSERACT_BUNDLE, "tesseract"))
-hiddenimports = ['anthropic', 'openai', 'openpyxl', 'docx', 'docx2pdf', 'pypdf', 'win32com', 'win32com.client', 'pywintypes',
-                'fitz', 'pymupdf', 'pytesseract', 'PIL', 'PIL.Image', 'io']
-tmp_ret = collect_all('anthropic')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
-tmp_ret = collect_all('openai')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
-tmp_ret = collect_all('pymupdf')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
-a = Analysis(
-    ['app.py'],
+from pathlib import Path
+
+# PyInstaller executes this spec via `exec(...)` where `__file__` may be undefined.
+# So we base paths on the current working directory (run pyinstaller from this folder).
+root = Path.cwd()
+
+# If you create a `tesseract_bundle/` folder (per README) containing:
+#   tesseract.exe + tessdata/
+# then pyinstaller will bundle it for OCR in the Rename tool.
+tesseract_bundle_dir = root / "tesseract_bundle"
+tesseract_datas = []
+if tesseract_bundle_dir.exists():
+    tesseract_datas = [(str(tesseract_bundle_dir), "tesseract")]
+
+analysis_main = Analysis(
+    ['redesign.py'],
     pathex=[],
-    binaries=binaries,
-    datas=datas,
-    hiddenimports=hiddenimports,
+    binaries=[],
+    datas=tesseract_datas,
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -39,16 +28,15 @@ a = Analysis(
     noarchive=False,
     optimize=0,
 )
-pyz = PYZ(a.pure)
+pyz_main = PYZ(analysis_main.pure)
 
-exe = EXE(
-    pyz,
-    a.scripts,
-    a.binaries,
-    a.datas,
+exe_main = EXE(
+    pyz_main,
+    analysis_main.scripts,
+    analysis_main.binaries,
+    analysis_main.datas,
     [],
     name='SheetGen',
-    icon='sheetgen.ico',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -61,4 +49,42 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['sheetgen.ico'],
+)
+
+analysis_updater = Analysis(
+    ['updater.py'],
+    pathex=[],
+    binaries=[],
+    datas=[],
+    hiddenimports=[],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    noarchive=False,
+    optimize=0,
+)
+pyz_updater = PYZ(analysis_updater.pure)
+
+exe_updater = EXE(
+    pyz_updater,
+    analysis_updater.scripts,
+    analysis_updater.binaries,
+    analysis_updater.datas,
+    [],
+    name='SheetGenUpdater',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=False,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+    icon=[],
 )

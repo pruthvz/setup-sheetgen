@@ -55,3 +55,14 @@ desktop.ini
 # Project-specific
 *.log
 *.tmp
+
+./test
+/test
+
+# Large generated outputs / test artifacts
+output/
+
+# Idea-heavy build/update scripts (keep out of public pushes)
+manifest.json
+redesign.py
+updater.py
