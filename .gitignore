@@ -66,3 +66,4 @@ output/
 manifest.json
 redesign.py
 updater.py
+app.py
